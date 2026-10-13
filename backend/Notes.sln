@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.Api", "Notes.Api\Notes.Api.csproj", "{863CBE8C-6168-4C78-BB48-7D602C5896AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.UnitTests", "Notes.UnitTests\Notes.UnitTests.csproj", "{819D1B6A-821B-408E-B8A6-5898B8441DB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{863CBE8C-6168-4C78-BB48-7D602C5896AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{863CBE8C-6168-4C78-BB48-7D602C5896AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{863CBE8C-6168-4C78-BB48-7D602C5896AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{863CBE8C-6168-4C78-BB48-7D602C5896AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{819D1B6A-821B-408E-B8A6-5898B8441DB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{819D1B6A-821B-408E-B8A6-5898B8441DB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{819D1B6A-821B-408E-B8A6-5898B8441DB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{819D1B6A-821B-408E-B8A6-5898B8441DB5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
