@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.Api", "Notes.Api\Note
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.UnitTests", "Notes.UnitTests\Notes.UnitTests.csproj", "{819D1B6A-821B-408E-B8A6-5898B8441DB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.IntegrationTests", "Notes.IntegrationTests\Notes.IntegrationTests.csproj", "{CBA1DB4E-0962-4C5A-85AD-54A8C382C073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{819D1B6A-821B-408E-B8A6-5898B8441DB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{819D1B6A-821B-408E-B8A6-5898B8441DB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{819D1B6A-821B-408E-B8A6-5898B8441DB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBA1DB4E-0962-4C5A-85AD-54A8C382C073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA1DB4E-0962-4C5A-85AD-54A8C382C073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBA1DB4E-0962-4C5A-85AD-54A8C382C073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA1DB4E-0962-4C5A-85AD-54A8C382C073}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

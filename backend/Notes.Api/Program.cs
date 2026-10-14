@@ -1,41 +1,60 @@
+using Microsoft.EntityFrameworkCore;
+using Notes.Api.Data;
+using Notes.Api.Domain;
+using Notes.Api.Events;
+using Notes.Api.Messaging;
+using RabbitMQ.Client;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddDbContext<NotesDbContext>(o =>
+    o.UseNpgsql(builder.Configuration.GetConnectionString("Notes")));
+
+builder.Services.AddSingleton<IConnection>(_ =>
+{
+    var factory = new ConnectionFactory
+    {
+        Uri = new Uri(builder.Configuration.GetConnectionString("RabbitMq")!)
+    };
+    return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+});
+builder.Services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
-}
 
-app.UseHttpsRedirection();
+app.MapGet("/api/notes", async (NotesDbContext db) =>
+    await db.Notes.ToListAsync());
 
-var summaries = new[]
+app.MapGet("/api/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
+    await db.Notes.FindAsync(id) is { } note ? Results.Ok(note) : Results.NotFound());
+
+app.MapPost("/api/notes", async (CreateNoteRequest req, NotesDbContext db, IEventPublisher publisher) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var note = Note.Create(req.Title, req.Content);
+    db.Notes.Add(note);
+    await db.SaveChangesAsync();
+    await publisher.PublishAsync(new NoteCreated(note.Id, note.Title));
+    return Results.Created($"/api/notes/{note.Id}", note);
+});
 
-app.MapGet("/weatherforecast", () =>
+
+app.MapDelete("/api/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    var note = await db.Notes.FindAsync(id);
+    if (note is null) return Results.NotFound();
+    db.Notes.Remove(note);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public record CreateNoteRequest(string Title, string Content);
+
+public partial class Program;
