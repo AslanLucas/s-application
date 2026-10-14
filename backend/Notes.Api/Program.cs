@@ -53,6 +53,13 @@ app.MapDelete("/api/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
     return Results.NoContent();
 });
 
+if (app.Configuration.GetValue<bool>("MigrateOnStartup"))
+{
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<NotesDbContext>().Database.Migrate();
+}
+
+
 app.Run();
 
 public record CreateNoteRequest(string Title, string Content);

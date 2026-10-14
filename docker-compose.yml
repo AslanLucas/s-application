@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: notes
+      POSTGRES_PASSWORD: notes
+      POSTGRES_DB: notes
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notes -d notes"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mq:
+    image: rabbitmq:4
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  api:
+    build: ./backend
+    environment:
+      ConnectionStrings__Notes: Host=db;Database=notes;Username=notes;Password=notes
+      ConnectionStrings__RabbitMq: amqp://guest:guest@mq:5672/
+      MigrateOnStartup: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+      mq:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
