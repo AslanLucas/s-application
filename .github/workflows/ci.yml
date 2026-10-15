@@ -74,3 +74,54 @@ jobs:
       - name: Manifeste rendern
         run: helm template notes deploy/helm/notes > /dev/null
 
+  kubernetes:
+    needs: [backend, frontend, helm]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: helm/kind-action@v1
+        with:
+          cluster_name: notes
+
+      - name: Images bauen
+        run: |
+          docker build -t notes-api:dev backend
+          docker build -t notes-web:dev frontend
+
+      - name: Images in den Cluster laden
+        run: kind load docker-image notes-api:dev notes-web:dev --name notes
+
+      - name: Chart installieren
+        run: helm install notes deploy/helm/notes --wait --timeout 5m
+
+      - name: Port weiterleiten
+        run: |
+          kubectl port-forward svc/web 8081:80 &
+          sleep 3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Playwright installieren
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: E2E-Tests gegen Kubernetes
+        working-directory: e2e
+        env:
+          BASE_URL: http://localhost:8081
+        run: npx playwright test
+
+      - name: Diagnose bei Fehler
+        if: failure()
+        run: |
+          kubectl get pods -o wide
+          kubectl describe pods
+          kubectl logs deploy/api --tail=100 || true
+
