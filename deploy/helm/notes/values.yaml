@@ -1,0 +1,17 @@
+api:
+  image: notes-api:dev
+  replicas: 1
+
+web:
+  image: notes-web:dev
+  replicas: 1
+
+postgres:
+  image: postgres:17
+  user: notes
+  password: notes
+  database: notes
+  storage: 1Gi
+
+rabbitmq:
+  image: rabbitmq:4
