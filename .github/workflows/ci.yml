@@ -63,3 +63,14 @@ jobs:
       - name: Logs bei Fehler
         if: failure()
         run: docker compose logs
+
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - name: Helm lint
+        run: helm lint deploy/helm/notes
+      - name: Manifeste rendern
+        run: helm template notes deploy/helm/notes > /dev/null
+
