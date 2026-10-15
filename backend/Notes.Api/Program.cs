@@ -3,7 +3,6 @@ using Notes.Api.Data;
 using Notes.Api.Domain;
 using Notes.Api.Events;
 using Notes.Api.Messaging;
-using RabbitMQ.Client;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,14 +11,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<NotesDbContext>(o =>
     o.UseNpgsql(builder.Configuration.GetConnectionString("Notes")));
 
-builder.Services.AddSingleton<IConnection>(_ =>
-{
-    var factory = new ConnectionFactory
-    {
-        Uri = new Uri(builder.Configuration.GetConnectionString("RabbitMq")!)
-    };
-    return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-});
+builder.Services.AddSingleton<RabbitMqConnection>();
 builder.Services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
 
 
