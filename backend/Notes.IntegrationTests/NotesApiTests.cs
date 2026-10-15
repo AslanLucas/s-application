@@ -73,4 +73,16 @@ public class NotesApiTests(NotesApiFactory factory) : IClassFixture<NotesApiFact
         Assert.Equal("Event", evt!.Title);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData(null)]
+    public async Task Post_WithEmptyTitle_ReturnsBadRequest(string? title)
+    {
+        var response = await _client.PostAsJsonAsync("/api/notes", new { title, content = "x" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+
 }

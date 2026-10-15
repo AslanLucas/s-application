@@ -36,12 +36,25 @@ app.MapGet("/api/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
 
 app.MapPost("/api/notes", async (CreateNoteRequest req, NotesDbContext db, IEventPublisher publisher) =>
 {
-    var note = Note.Create(req.Title, req.Content);
+    Note note;
+    try
+    {
+        note = Note.Create(req.Title, req.Content);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            ["title"] = [ex.Message]
+        });
+    }
+
     db.Notes.Add(note);
     await db.SaveChangesAsync();
     await publisher.PublishAsync(new NoteCreated(note.Id, note.Title));
     return Results.Created($"/api/notes/{note.Id}", note);
 });
+
 
 
 app.MapDelete("/api/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
